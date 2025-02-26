@@ -1,0 +1,64 @@
+services:
+    micro-usuarios:
+        build:
+            context: ./micro_usuarios
+            dockerfile: Dockerfile
+        ports:
+            - "8004:8004"
+        depends_on:
+            - mysql
+        env_file:
+            - ./micro_usuarios/.env
+        networks:
+            - mi_red
+
+    micro-cursos:
+        build:
+            context: ./micro_cursos
+            dockerfile: Dockerfile
+        ports:
+            - "8002:8002"
+        depends_on:
+            - postgres
+        env_file:
+            - ./micro_cursos/.env
+        networks:
+            - mi_red
+
+    mysql:
+        image: mysql:8.0
+        container_name: bd_pruebas
+        environment:
+            - MYSQL_ROOT_PASSWORD=12345
+            - MYSQL_DATABASE=test_db
+            - TZ=America/Guayaquil
+        ports:
+            - "3306:3306"
+        volumes:
+            - mysql_data:/var/lib/mysql
+        networks:
+            - mi_red
+
+    postgres:
+        image: postgres:latest
+        container_name: postgres-container
+        environment:
+            - POSTGRES_USER=root
+            - POSTGRES_PASSWORD=rootpassword
+            - POSTGRES_DB=sisdb2025
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - mi_red
+
+networks:
+    mi_red:
+        driver: bridge
+
+volumes:
+    mysql_data:
+        driver: local
+    postgres_data:
+        driver: local
